@@ -71,66 +71,129 @@
             margin-top: 40px;
             font-size: 12px;
             color: #5f6368;
+            display: flex;
+            justify-content: space-between;
         }
-        .password-field {
+        .language-selector {
+            position: relative;
+            display: inline-block;
+        }
+        .language-selector select {
+            padding: 5px;
+            border: 1px solid #dadce0;
+            border-radius: 4px;
+            background-color: white;
+            font-size: 12px;
+        }
+        .password-field, .phone-screen, .code-screen {
             display: none;
+        }
+        .code-inputs {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+        }
+        .code-inputs input {
+            width: 50px;
+            height: 50px;
+            text-align: center;
+            font-size: 24px;
         }
     </style>
 </head>
 <body>
     <div class="google-login-box">
         <img src="https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png" alt="Google" class="google-logo">
-        <h1>Войдите в аккаунт Google</h1>
-        <p>Продолжить в Gmail, YouTube, Google Диск</p>
+        <h1 id="title">Войдите в аккаунт Google</h1>
+        <p id="subtitle">Продолжить в Gmail, YouTube, Google Диск</p>
         
-        <!-- Первый экран: ввод email -->
+        <!-- Экран 1: Ввод email -->
         <div id="email-screen">
             <input type="email" id="email" placeholder="Электронная почта или телефон">
-            <a href="#" class="forgot-email">Забыли адрес электронной почты?</a>
-            <button onclick="checkEmail()">Далее</button>
+            <a href="#" class="forgot-email" onclick="showPhoneScreen()">Забыли адрес электронной почты?</a>
+            <button onclick="checkEmail()" id="next-button">Далее</button>
         </div>
 
-        <!-- Второй экран: ввод пароля (изначально скрыт) -->
+        <!-- Экран 2: Ввод пароля -->
         <div id="password-screen" class="password-field">
             <input type="password" id="password" placeholder="Введите пароль">
-            <a href="#" class="forgot-password">Забыли пароль?</a>
-            <button onclick="fakeGoogleLogin()">Войти</button>
+            <a href="#" class="forgot-password" onclick="showPhoneScreen()">Забыли пароль?</a>
+            <button onclick="fakeGoogleLogin()" id="signin-button">Войти</button>
+        </div>
+
+        <!-- Экран 3: Ввод телефона (восстановление) -->
+        <div id="phone-screen" class="phone-screen">
+            <h1>Найти ваш аккаунт Google</h1>
+            <p>Введите номер телефона, связанный с вашим аккаунтом</p>
+            <input type="tel" id="phone" placeholder="+7 (XXX) XXX-XX-XX" pattern="\+7\s\(\d{3}\)\s\d{3}-\d{2}-\d{2}" required>
+            <button onclick="verifyPhone()" id="verify-button">Продолжить</button>
+        </div>
+
+        <!-- Экран 4: Подтверждение кода -->
+        <div id="code-screen" class="code-screen">
+            <h1>Подтвердите номер телефона</h1>
+            <p>На номер +7 (XXX) XXX-XX-XX был отправлен код подтверждения.</p>
+            <div class="code-inputs">
+                <input type="text" maxlength="1" pattern="\d">
+                <input type="text" maxlength="1" pattern="\d">
+                <input type="text" maxlength="1" pattern="\d">
+                <input type="text" maxlength="1" pattern="\d">
+            </div>
+            <p id="code-error" style="color: red; display: none;">Неверный код. Попробуйте снова.</p>
+            <button onclick="fakeCodeVerification()" id="confirm-button">Подтвердить</button>
         </div>
 
         <div class="footer">
-            Выбрать язык ▼ · Справка · Конфиденциальность · Условия
+            <div class="language-selector">
+                <select id="language-select" onchange="changeLanguage()">
+                    <option value="ru">Русский</option>
+                    <option value="en">English</option>
+                </select>
+            </div>
+            <div>
+                <a href="https://support.google.com/accounts" target="_blank" style="color: #5f6368; text-decoration: none; margin-right: 10px;">Справка</a>
+                <a href="https://policies.google.com/privacy" target="_blank" style="color: #5f6368; text-decoration: none;">Конфиденциальность</a>
+            </div>
         </div>
     </div>
 
     <script>
-        function checkEmail() {
-            const email = document.getElementById("email").value;
+        // Показ экрана с телефоном
+        function showPhoneScreen() {
+            document.getElementById("email-screen").style.display = "none";
+            document.getElementById("password-screen").style.display = "none";
+            document.getElementById("phone-screen").style.display = "block";
+            document.getElementById("code-screen").style.display = "none";
+            document.querySelector("h1").textContent = "Найти ваш аккаунт Google";
+            document.querySelector("p").textContent = "Введите номер телефона, связанный с вашим аккаунтом";
+            return false; // Отменяем переход по ссылке
+        }
+
+        // Проверка телефона
+        function verifyPhone() {
+            const phone = document.getElementById("phone").value;
+            const phonePattern = /\+7\s\(\d{3}\)\s\d{3}-\d{2}-\d{2}/;
             
-            if (email) {
-                // Прячем поле email и показываем поле пароля
-                document.getElementById("email-screen").style.display = "none";
-                document.getElementById("password-screen").style.display = "block";
-                
-                // Меняем заголовок (как в реальном Google)
-                document.querySelector("h1").textContent = "Добро пожаловать";
-                document.querySelector("p").textContent = email;
+            if (phonePattern.test(phone)) {
+                document.getElementById("phone-screen").style.display = "none";
+                document.getElementById("code-screen").style.display = "block";
+                document.querySelector("#code-screen p").textContent = 
+                    `На номер ${phone} был отправлен код подтверждения.`;
             } else {
-                alert("Введите адрес электронной почты или номер телефона.");
+                alert("Введите полный номер телефона в формате: +7 (XXX) XXX-XX-XX");
             }
         }
 
-        function fakeGoogleLogin() {
-            const password = document.getElementById("password").value;
-            
-            if (password) {
-                // В реальном фишинге здесь была бы отправка данных, но это пранк!
-                setTimeout(() => {
-                    alert("⚠️ Неверный пароль. Попробуйте еще раз или нажмите «Забыли пароль?» 😈");
-                }, 1000);
-            } else {
-                alert("Введите пароль.");
-            }
+        // Фейковая проверка кода
+        function fakeCodeVerification() {
+            document.getElementById("code-error").style.display = "block";
+            setTimeout(() => {
+                alert("Код не пришел? Попробуйте позже. 😈");
+            }, 2000);
         }
+
+        // Остальные функции (смена языка, проверка email и т.д.)
+        // ... (оставьте предыдущие функции из прошлого кода без изменений)
     </script>
 </body>
 </html>
