@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход в Google – Аккаунт Google</title>
+    <style>
+        body {
+            font-family: 'Roboto', Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .google-login-box {
+            background-color: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 400px;
+        }
+        .google-logo {
+            width: 75px;
+            margin-bottom: 20px;
+        }
+        .google-login-box h1 {
+            font-size: 24px;
+            font-weight: normal;
+            margin-bottom: 10px;
+        }
+        .google-login-box p {
+            color: #5f6368;
+            margin-bottom: 30px;
+        }
+        .google-login-box input {
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            border: 1px solid #dadce0;
+            border-radius: 4px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        .google-login-box button {
+            width: 100%;
+            padding: 10px;
+            background-color: #1a73e8;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        .google-login-box button:hover {
+            background-color: #1765cc;
+        }
+        .forgot-password, .forgot-email {
+            color: #1a73e8;
+            text-decoration: none;
+            font-size: 14px;
+            display: inline-block;
+            margin-top: 10px;
+        }
+        .footer {
+            margin-top: 40px;
+            font-size: 12px;
+            color: #5f6368;
+        }
+        .password-field {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="google-login-box">
+        <img src="https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png" alt="Google" class="google-logo">
+        <h1>Войдите в аккаунт Google</h1>
+        <p>Продолжить в Gmail, YouTube, Google Диск</p>
+        
+        <!-- Первый экран: ввод email -->
+        <div id="email-screen">
+            <input type="email" id="email" placeholder="Электронная почта или телефон">
+            <a href="#" class="forgot-email">Забыли адрес электронной почты?</a>
+            <button onclick="checkEmail()">Далее</button>
+        </div>
+
+        <!-- Второй экран: ввод пароля (изначально скрыт) -->
+        <div id="password-screen" class="password-field">
+            <input type="password" id="password" placeholder="Введите пароль">
+            <a href="#" class="forgot-password">Забыли пароль?</a>
+            <button onclick="fakeGoogleLogin()">Войти</button>
+        </div>
+
+        <div class="footer">
+            Выбрать язык ▼ · Справка · Конфиденциальность · Условия
+        </div>
+    </div>
+
+    <script>
+        function checkEmail() {
+            const email = document.getElementById("email").value;
+            
+            if (email) {
+                // Прячем поле email и показываем поле пароля
+                document.getElementById("email-screen").style.display = "none";
+                document.getElementById("password-screen").style.display = "block";
+                
+                // Меняем заголовок (как в реальном Google)
+                document.querySelector("h1").textContent = "Добро пожаловать";
+                document.querySelector("p").textContent = email;
+            } else {
+                alert("Введите адрес электронной почты или номер телефона.");
+            }
+        }
+
+        function fakeGoogleLogin() {
+            const password = document.getElementById("password").value;
+            
+            if (password) {
+                // В реальном фишинге здесь была бы отправка данных, но это пранк!
+                setTimeout(() => {
+                    alert("⚠️ Неверный пароль. Попробуйте еще раз или нажмите «Забыли пароль?» 😈");
+                }, 1000);
+            } else {
+                alert("Введите пароль.");
+            }
+        }
+    </script>
+</body>
+</html>
